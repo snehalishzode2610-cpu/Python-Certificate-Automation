@@ -1,0 +1,30 @@
+import pandas as pd
+from docxtpl import DocxTemplate
+import re
+
+# Load Excel data
+data = pd.read_excel(r"E:\quickserva\data.xlsx")
+
+# Generate certificates
+for index, row in data.iterrows():
+
+    doc = DocxTemplate(r"E:\quickserva\template.docx")
+
+    context = {
+        "name": str(row["Intern_Name"]),
+        "college": str(row["College_Name"]),
+        "field": str(row["Field"]),
+        "start": str(row["Start_Date"]),
+        "end": str(row["End_Date"]),
+        "certificate_id": str(row["Certificate_ID"]),
+        "issue_date": str(row["Issue_Date"])
+    }
+
+    doc.render(context)
+
+    # Clean filename
+    safe_name = re.sub(r'[\\/*?:"<>|]', "", str(row["Intern_Name"]))
+
+    doc.save(rf"E:\quickserva\certificate_{safe_name}.docx")
+
+print("All certificates generated successfully!")
